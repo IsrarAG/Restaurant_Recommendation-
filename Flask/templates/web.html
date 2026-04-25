@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Studio | Vellore & Vine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background: #0d0d0d; color: #d4d4d4; overflow: hidden; }
+        .serif { font-family: 'Cormorant Garamond', serif; }
+        .bg-text { position: fixed; font-size: 22vw; font-weight: 900; color: rgba(255,255,255,0.02); top: 20%; left: -5%; z-index: -1; pointer-events: none; }
+        .float-img { width: 280px; height: 380px; object-fit: cover; opacity: 0.2; filter: grayscale(1); transition: 0.5s; }
+        .float-img:hover { opacity: 0.6; filter: grayscale(0); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <div class="bg-text">MAPPING</div>
+    <nav class="p-10 max-w-7xl mx-auto w-full flex justify-between items-center z-10">
+        <a href="/" class="serif text-2xl italic tracking-widest text-white">V & V</a>
+        <a href="/" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Exit</a>
+    </nav>
+
+    <main class="flex-grow grid lg:grid-cols-12 gap-4 items-center px-10 relative z-10">
+        <div class="hidden lg:block lg:col-span-3">
+            <img src="https://images.unsplash.com/photo-1550966842-28ca9298495a?q=80&w=500" class="float-img rounded-full">
+        </div>
+        <div class="lg:col-span-6 text-center space-y-12">
+            <h1 class="serif text-7xl text-white italic">Inference Studio</h1>
+            <form action="/result" method="POST" autocomplete="off">
+                <input type="text" name="output" id="output" class="w-full bg-transparent border-b-2 border-gray-900 py-6 text-4xl text-center text-[#c5a059] focus:outline-none focus:border-[#c5a059] serif italic" placeholder="Source Restaurant">
+                <div id="suggestions" class="absolute w-full mt-2 bg-[#111] text-left z-50"></div>
+                <button type="submit" class="mt-12 border border-white/20 text-white px-12 py-4 text-[10px] font-bold uppercase tracking-[0.5em] hover:bg-white hover:text-black transition">Analyze Flavor</button>
+            </form>
+        </div>
+        <div class="hidden lg:block lg:col-span-3">
+            <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=500" class="float-img shadow-2xl">
+        </div>
+    </main>
+
+    <script>
+        const input = document.getElementById('output');
+        const suggest = document.getElementById('suggestions');
+        input.addEventListener('input', async function() {
+            if(!this.value) return suggest.innerHTML = "";
+            const res = await fetch(`/autocomplete?term=${this.value}`);
+            const data = await res.json();
+            suggest.innerHTML = data.map(item => `<div class="p-4 hover:bg-[#c5a059] hover:text-black cursor-pointer">${item}</div>`).join('');
+            Array.from(suggest.children).forEach((div, i) => {
+                div.onclick = () => { input.value = data[i]; suggest.innerHTML = ""; };
+            });
+        });
+    </script>
+</body>
+</html>
